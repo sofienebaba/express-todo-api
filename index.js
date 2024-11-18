@@ -9,23 +9,9 @@ let todos = [
   { id: 2, task: "build a rest api", completed: false, priority: "high" }
 ];
 
-// Complete all todos
-app.put('/todos/complete-all', (req, res) => {
-  if (todos.length === 0) {
-    return res.status(204).send({ message: "No todos to complete" });
-  }
-
-  // Mark all todos as completed
-  todos = todos.map(todo => ({ ...todo, completed: true }));
-
-  res.json({ message: "All todos marked as completed", todos });
-});
-
-// Get all todos (with optional filtering by completion status)
 app.get('/todos', (req, res) => {
   const { completed } = req.query;
 
-  // If `completed` query parameter is provided, filter todos
   if (completed !== undefined) {
     const filteredTodos = todos.filter(
       todo => todo.completed === (completed === 'true')
@@ -36,11 +22,9 @@ app.get('/todos', (req, res) => {
   res.json(todos);
 });
 
-// Add a new todo
 app.post('/todos', (req, res) => {
   const { task, priority } = req.body;
 
-  // Validate that 'task' is provided
   if (!task || typeof task !== 'string' || task.trim() === '') {
     return res.status(400).send({ error: 'Task is required and must be a non-empty string' });
   }
@@ -55,7 +39,6 @@ app.post('/todos', (req, res) => {
   res.status(201).json(newTodo);
 });
 
-// Update a specific todo by id
 app.put('/todos/:id', (req, res) => {
   const id = parseInt(req.params.id);
   const todo = todos.find(t => t.id === id);
@@ -73,7 +56,6 @@ app.put('/todos/:id', (req, res) => {
   res.json(todo);
 });
 
-// Delete a specific todo by id
 app.delete('/todos/:id', (req, res) => {
   const id = parseInt(req.params.id);
   const todoIndex = todos.findIndex(t => t.id === id);
@@ -86,7 +68,18 @@ app.delete('/todos/:id', (req, res) => {
   res.status(204).send();
 });
 
-// Start the server
+app.put('/todos/complete-all', (req, res) => {
+  if (todos.length === 0) {
+    return res.status(204).send({ message: "No todos to complete" });
+  }
+
+  todos = todos.map(todo => ({ ...todo, completed: true }));
+
+  res.json({ message: "All todos marked as completed", todos });
+});
+
+
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
